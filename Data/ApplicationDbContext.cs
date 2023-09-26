@@ -9,5 +9,6 @@ namespace MySecondApi_With_SQL.Data
         {
         }
         public DbSet<Student> Students { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
     }
 }

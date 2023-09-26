@@ -12,5 +12,7 @@ namespace MySecondApi_With_SQL.Model
         public required string PhoneNo { get; set; }
 
         public required string Address { get; set; }
+
+        public List<Subject> Subjects { get; set; } = new List<Subject>();
     }
 }

@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MySecondApi_With_SQL.Data;
 using MySecondApi_With_SQL.Model;
+using NuGet.Protocol;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MySecondApi_With_SQL.Controllers
 {
@@ -11,26 +15,46 @@ namespace MySecondApi_With_SQL.Controllers
     {
 
         private readonly ApplicationDbContext _context;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-       
+
+
 
         public StudentController(ApplicationDbContext context)
         {
             _context = context;
+
+            _jsonSerializerOptions = new  JsonSerializerOptions {     ReferenceHandler = ReferenceHandler.Preserve,};
+
+
         }
         [HttpGet]
+
         public ActionResult<IEnumerable<Student>> GetAllStudent()
         {
-            List<Student> students = _context.Students.ToList();
-            return Ok(students);
+            List<Student> students = _context.Students.Include(s => s.Subjects).ToList();
+
+            string  jsonResult = JsonSerializer.Serialize(students, _jsonSerializerOptions);
+
+
+            return Content(jsonResult,"application/json");
+
+
+            //return Ok(students);
         }
-        //[HttpGet]
-        //public ActionResult GetStudent(int id)
-        //{
-            
-        //    Student students = _context.Students.Where(sd=>sd.Id == id ).FirstOrDefault();
-        //    return Ok(students);
-        //}
+
+        [HttpGet("{id}")]
+        public ActionResult GetStudent(int id)
+        {
+
+            Student students = _context.Students.Where(sd => sd.Id == id).Include(s=> s.Subjects).FirstOrDefault();
+            string jsonResult = JsonSerializer.Serialize(students, _jsonSerializerOptions);
+
+
+            return Content(jsonResult, "application/json");
+
+            //return Ok(students);
+        }
 
 
 
@@ -43,13 +67,13 @@ namespace MySecondApi_With_SQL.Controllers
 
         }
 
-        [HttpPut]
-        public ActionResult Update(Student student)
+        [HttpPut("{id}")]
+        public ActionResult Update(int id,Student student)
         {
-            var std = _context.Students.Where(sd => sd.Id == student.Id).FirstOrDefault();
+            var std = _context.Students.Where(sd => sd.Id == id).FirstOrDefault();
             if(std!=null)
             {
-                std.Id = student.Id;
+                //std.Id = student.Id;
                 std.Name = student.Name;
                 std.Address = student.Address;
                 std.PhoneNo = student.PhoneNo;

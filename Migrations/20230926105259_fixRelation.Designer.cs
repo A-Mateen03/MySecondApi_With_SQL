@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MySecondApi_With_SQL.Data;
 
@@ -11,9 +12,11 @@ using MySecondApi_With_SQL.Data;
 namespace MySecondApi_With_SQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230926105259_fixRelation")]
+    partial class fixRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,11 +81,9 @@ namespace MySecondApi_With_SQL.Migrations
 
             modelBuilder.Entity("MySecondApi_With_SQL.Model.Subject", b =>
                 {
-                    b.HasOne("MySecondApi_With_SQL.Model.Student", "Student")
+                    b.HasOne("MySecondApi_With_SQL.Model.Student", null)
                         .WithMany("Subjects")
                         .HasForeignKey("StudentId");
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("MySecondApi_With_SQL.Model.Student", b =>
